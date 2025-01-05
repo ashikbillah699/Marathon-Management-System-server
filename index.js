@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -22,8 +22,22 @@ async function run() {
   try {
     const marathonCollection = client.db('MarathosDB').collection('Marathons');
 
+    //get All Marathons
+    app.get('/marathons', async(req, res)=>{
+        const result = await marathonCollection.find().toArray();
+        res.send(result);
+    })
+
+    //get marathon detail 
+    app.get('/marathons/:id', async(req, res)=>{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const result = await marathonCollection.findOne(query);
+        res.send(result);
+    })
+
     // save marathos data in db
-    app.post('/marathon', async (req, res)=>{
+    app.post('/marathon/', async (req, res)=>{
         const marathonData = req.body;
         const result = await marathonCollection.insertOne(marathonData)
         console.log(marathonData);
