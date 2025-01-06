@@ -21,6 +21,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         const marathonCollection = client.db('MarathosDB').collection('Marathons');
+        const registrationCollection = client.db('MarathosDB').collection('ApplyMarathons');
 
         //get All Marathons
         app.get('/marathons', async (req, res) => {
@@ -49,6 +50,30 @@ async function run() {
             const marathonData = req.body;
             const result = await marathonCollection.insertOne(marathonData)
             // console.log(marathonData);
+            res.send(result);
+        })
+
+        // save user and Registration marathons data
+        app.post('/registration', async(req, res)=>{
+            const registrationData = req.body;
+
+            // check again count from same user
+            const query = {email: registrationData.email, marathonId:registrationData.marathonId};
+            const alreadyExist = await registrationCollection.findOne(query);
+            if(alreadyExist){
+                return res.status(403).send({message: 'You have already placed a registration on the marathon!!'})
+            }
+            const result = await registrationCollection.insertOne(registrationData);
+
+            // InCreace Total Register
+            const filter = {_id: new ObjectId(registrationData.marathonId)}
+            const updateData = {
+                $inc:{
+                    totalRegistrationCount: 1
+                }
+            }
+            const updateCount = await marathonCollection.updateOne(filter, updateData);
+
             res.send(result);
         })
 
