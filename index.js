@@ -36,11 +36,19 @@ async function run() {
         res.send(result);
     })
 
+    // get All Marathons posted by a specific user
+    app.get('/marathonsSpecific/:email', async(req, res)=>{
+        const email = req.params.email;
+        const query = {"marathonCreater.email": email};
+        const result = await marathonCollection.find(query).toArray();
+        res.send(result);
+    })
+
     // save marathos data in db
-    app.post('/marathon/', async (req, res)=>{
+    app.post('/marathon', async (req, res)=>{
         const marathonData = req.body;
         const result = await marathonCollection.insertOne(marathonData)
-        console.log(marathonData);
+        // console.log(marathonData);
         res.send(result);
     })
 
