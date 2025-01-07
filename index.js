@@ -5,11 +5,11 @@ const app = express();
 const port = process.env.PORT || 5000;
 require('dotenv').config();
 
-
 app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.j8csd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
     serverApi: {
@@ -18,6 +18,7 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
+
 async function run() {
     try {
         const marathonCollection = client.db('MarathosDB').collection('Marathons');
@@ -29,7 +30,7 @@ async function run() {
             res.send(result);
         })
 
-        // get 6 Marathons data in database
+        // get 6 Marathons data from database
         app.get('/limitMarathons', async (req, res) => {
             const result = await marathonCollection.find().limit(6).toArray();
             res.send(result);
@@ -54,7 +55,12 @@ async function run() {
         // get All Marathons posted by a specific user
         app.get('/registationsSpecific/:email', async (req, res) => {
             const email = req.params.email;
-            const query = { email: email };
+            const search = req.query.search;
+            console.log( search)
+            const query = { email: email , ...(search && { marathonTitle:{
+                $regex: search,
+                $options: 'i'
+            }})};
             const result = await registrationCollection.find(query).toArray();
             res.send(result);
         })
