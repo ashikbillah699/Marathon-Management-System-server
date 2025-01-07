@@ -45,6 +45,14 @@ async function run() {
             res.send(result);
         })
 
+        // get All Marathons posted by a specific user
+        app.get('/registationsSpecific/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const result = await registrationCollection.find(query).toArray();
+            res.send(result);
+        })
+
         // save marathos data in db
         app.post('/marathon', async (req, res) => {
             const marathonData = req.body;
@@ -85,6 +93,14 @@ async function run() {
             res.send(result);
         })
 
+        // delete single Registation from database
+        app.delete('/registation/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await registrationCollection.deleteOne(query);
+            res.send(result);
+        })
+
         // update Marathon
         app.put('/marathonUpdate/:id', async (req, res) => {
             const id = req.params.id;
@@ -105,6 +121,27 @@ async function run() {
                 }
             }
             const result = await marathonCollection.updateOne(filter, updateMarathon)
+            res.send(result);
+        })
+
+        // update registration Information
+        app.put('/registrationUpdate/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateData = req.body;
+            const updateMarathon = {
+                $set: {
+                    marathonTitle: updateData.marathonTitle,
+                    marathonStartDate: updateData.marathonStartDate,
+                    email: updateData.email,
+                    contactNumber: updateData.contactNumber,
+                    firstName: updateData.firstName,
+                    lastName: updateData.lastName,
+                    additionalInfo: updateData.additionalInfo,
+                    marathonId: updateData.marathonId,
+                }
+            }
+            const result = await registrationCollection.updateOne(filter, updateMarathon)
             res.send(result);
         })
 
