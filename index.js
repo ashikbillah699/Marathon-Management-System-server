@@ -29,6 +29,12 @@ async function run() {
             res.send(result);
         })
 
+        // get 6 Marathons data in database
+        app.get('/limitMarathons', async (req, res) => {
+            const result = await marathonCollection.find().limit(6).toArray();
+            res.send(result);
+        })
+
         //get marathon detail 
         app.get('/marathons/:id', async (req, res) => {
             const id = req.params.id;
