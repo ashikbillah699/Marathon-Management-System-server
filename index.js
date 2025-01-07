@@ -26,7 +26,10 @@ async function run() {
 
         //get All Marathons
         app.get('/marathons', async (req, res) => {
-            const result = await marathonCollection.find().toArray();
+            const sort = req.query.sort;
+            let options = {createdAt: sort === 'asc' ? 1 : -1};
+            // if(sort) options = {sort: {createdAt: sort === 'asc' ? 1 : -1}}
+            const result = await marathonCollection.find().sort(options).toArray();
             res.send(result);
         })
 
