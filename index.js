@@ -8,7 +8,11 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser')
 
 app.use(cors({
-    origin: ['http://localhost:5173'],
+    origin: [
+        'http://localhost:5173',
+        'https://racepoint-7b5a0.web.app',
+        'https://racepoint-7b5a0.firebaseapp.com'
+        ],
     credentials: true,
     optionsSuccessStatus: 200
 }));
